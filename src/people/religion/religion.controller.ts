@@ -27,7 +27,9 @@ export class ReligionController {
   constructor(private ReligionService: ReligionService) {}
 
   @Post()
-  async registerReligion(@Body() ReligionDto: ReligionDto): Promise<TransResponse> {
+  async registerReligion(
+    @Body() ReligionDto: ReligionDto,
+  ): Promise<TransResponse> {
     return this.ReligionService.registerReligion(ReligionDto);
   }
 
@@ -50,9 +52,7 @@ export class ReligionController {
 
   @Delete(':id')
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async deleteReligion(
-    @Param('id') id: string,
-  ): Promise<TransResponse> {
+  async deleteReligion(@Param('id') id: string): Promise<TransResponse> {
     return this.ReligionService.deleteReligion(id);
   }
 }

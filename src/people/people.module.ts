@@ -9,7 +9,10 @@ import { AuthModule } from '../auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Religion, ReligionSchema } from './religion/religion.schema';
 import { Profession, ProfessionSchema } from './profession/profession.schema';
-import { MediaSocial, MediaSocialSchema } from './media_social/media_social.schema';
+import {
+  MediaSocial,
+  MediaSocialSchema,
+} from './media_social/media_social.schema';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -33,7 +36,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ]),
     AuthModule,
   ],
-  controllers: [ReligionController, ProfessionController, MediaSocialController],
+  controllers: [
+    ReligionController,
+    ProfessionController,
+    MediaSocialController,
+  ],
   providers: [ReligionService, ProfessionService, MediaSocialService],
 })
 export class PeopleModule {}

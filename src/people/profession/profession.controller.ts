@@ -27,7 +27,9 @@ export class ProfessionController {
   constructor(private ProfessionService: ProfessionService) {}
 
   @Post()
-  async registerProfession(@Body() ProfessionDto: ProfessionDto): Promise<TransResponse> {
+  async registerProfession(
+    @Body() ProfessionDto: ProfessionDto,
+  ): Promise<TransResponse> {
     return this.ProfessionService.registerProfession(ProfessionDto);
   }
 
@@ -50,9 +52,7 @@ export class ProfessionController {
 
   @Delete(':id')
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async deleteProfession(
-    @Param('id') id: string,
-  ): Promise<TransResponse> {
+  async deleteProfession(@Param('id') id: string): Promise<TransResponse> {
     return this.ProfessionService.deleteProfession(id);
   }
 }

@@ -27,7 +27,9 @@ export class MediaSocialController {
   constructor(private MediaSocialService: MediaSocialService) {}
 
   @Post()
-  async registerMediaSocial(@Body() MediaSocialDto: MediaSocialDto): Promise<TransResponse> {
+  async registerMediaSocial(
+    @Body() MediaSocialDto: MediaSocialDto,
+  ): Promise<TransResponse> {
     return this.MediaSocialService.registerMediaSocial(MediaSocialDto);
   }
 
@@ -50,9 +52,7 @@ export class MediaSocialController {
 
   @Delete(':id')
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async deleteMediaSocial(
-    @Param('id') id: string,
-  ): Promise<TransResponse> {
+  async deleteMediaSocial(@Param('id') id: string): Promise<TransResponse> {
     return this.MediaSocialService.deleteMediaSocial(id);
   }
 }

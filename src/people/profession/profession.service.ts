@@ -23,12 +23,15 @@ export class ProfessionService {
   private professionIndex = 'profession';
 
   constructor(
-    @InjectModel(Profession.name) private professionModel: Model<ProfessionDocument>,
+    @InjectModel(Profession.name)
+    private professionModel: Model<ProfessionDocument>,
     @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
-  async registerProfession(ProfessionDto: ProfessionDto): Promise<TransResponse> {
+  async registerProfession(
+    ProfessionDto: ProfessionDto,
+  ): Promise<TransResponse> {
     let { name } = ProfessionDto;
     name = xss(name);
     const isExist = await this.professionModel.findOne({ name: name }).exec();
@@ -142,9 +145,10 @@ export class ProfessionService {
   }
 
   async getProfessions() {
-    const profession = await this.elasticsearchService.search<ProfessionResponse>({
-      index: this.professionIndex,
-    });
+    const profession =
+      await this.elasticsearchService.search<ProfessionResponse>({
+        index: this.professionIndex,
+      });
 
     const hits = profession.hits.hits;
     return hits.map((item) => item._source);

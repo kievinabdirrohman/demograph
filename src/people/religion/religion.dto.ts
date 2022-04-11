@@ -1,9 +1,4 @@
-import {
-  IsString,
-  MaxLength,
-  MinLength,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, MaxLength, MinLength, IsNotEmpty } from 'class-validator';
 
 export class ReligionDto {
   @IsString()

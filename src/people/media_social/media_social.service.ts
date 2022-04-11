@@ -23,12 +23,15 @@ export class MediaSocialService {
   private mediaSocialIndex = 'media_social';
 
   constructor(
-    @InjectModel(MediaSocial.name) private mediasocialModel: Model<MediaSocialDocument>,
+    @InjectModel(MediaSocial.name)
+    private mediasocialModel: Model<MediaSocialDocument>,
     @InjectConnection() private readonly connection: mongoose.Connection,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
-  async registerMediaSocial(MediaSocialDto: MediaSocialDto): Promise<TransResponse> {
+  async registerMediaSocial(
+    MediaSocialDto: MediaSocialDto,
+  ): Promise<TransResponse> {
     let { name } = MediaSocialDto;
     name = xss(name);
     const isExist = await this.mediasocialModel.findOne({ name: name }).exec();
