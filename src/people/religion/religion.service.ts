@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { Religion, ReligionDocument } from './religion.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { TransResponse } from './response.type';
+import { DefaultResponse } from '../response.type';
 import { ReligionDto } from './religion.dto';
 import { Model } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
@@ -28,9 +29,9 @@ export class ReligionService {
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
-  async registerReligion(ReligionDto: ReligionDto): Promise<TransResponse> {
+  async registerReligion(ReligionDto: ReligionDto): Promise<DefaultResponse> {
     let { name } = ReligionDto;
-    name = xss(name);
+    name = xss(name.trim());
     const isExist = await this.religionModel.findOne({ name: name }).exec();
     if (isExist) {
       throw new ConflictException('name has already registered');
@@ -52,7 +53,11 @@ export class ReligionService {
 
       await session.commitTransaction();
 
-      return { message: 'success' };
+      return {
+        statusCode: 201,
+        message: 'religion registered successfully',
+        error: null,
+      };
     } catch (error) {
       await session.abortTransaction();
       throw new InternalServerErrorException('Something went wrong');
@@ -64,9 +69,9 @@ export class ReligionService {
   async updateReligion(
     id: string,
     ReligionDto: ReligionDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     let { name } = ReligionDto;
-    name = xss(name);
+    name = xss(name.trim());
     const religion = await this.religionModel.findOne({ id: id }).exec();
     if (!religion) {
       throw new NotFoundException('Religion is not found!');
@@ -103,7 +108,11 @@ export class ReligionService {
         },
       });
       await session.commitTransaction();
-      return { message: 'success' };
+      return {
+        statusCode: 200,
+        message: 'religion updated successfully',
+        error: null,
+      };
     } catch (error) {
       await session.abortTransaction();
       throw new InternalServerErrorException('Something went wrong');
@@ -112,7 +121,7 @@ export class ReligionService {
     }
   }
 
-  async deleteReligion(id: string): Promise<TransResponse> {
+  async deleteReligion(id: string): Promise<DefaultResponse> {
     const religion = await this.religionModel.findOne({ id: id }).exec();
     if (!religion) {
       throw new NotFoundException('Religion is not found!');
@@ -132,7 +141,11 @@ export class ReligionService {
         },
       });
       await session.commitTransaction();
-      return { message: 'success' };
+      return {
+        statusCode: 200,
+        message: 'religion deleted successfully',
+        error: null,
+      };
     } catch (error) {
       await session.abortTransaction();
       throw new InternalServerErrorException('Something went wrong');
@@ -141,12 +154,16 @@ export class ReligionService {
     }
   }
 
-  async getReligions() {
+  async getReligions(): Promise<DefaultResponse> {
     const religions = await this.elasticsearchService.search<ReligionResponse>({
       index: this.religionIndex,
     });
 
     const hits = religions.hits.hits;
-    return hits.map((item) => item._source);
+    return {
+      statusCode: 200,
+      message: JSON.stringify(hits.map((item) => item._source)),
+      error: null,
+    };
   }
 }

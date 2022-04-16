@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Get, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './auth-signin.dto';
 import { SignUpDto } from './auth-signup.dto';
@@ -7,8 +14,10 @@ import { Throttle } from '@nestjs/throttler';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../users/get-user.decorator';
 import { User } from '../users/user.schema';
+import MongooseClassSerializerInterceptor from '../mongooseClassSerializer.interceptor';
 
 @Controller('auth')
+@UseInterceptors(MongooseClassSerializerInterceptor(User))
 export class AuthController {
   constructor(private authService: AuthService) {}
 

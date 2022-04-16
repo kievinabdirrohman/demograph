@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type MediaSocialDocument = MediaSocial & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class MediaSocial {
   @Prop({ type: String, unique: true })
   id: {

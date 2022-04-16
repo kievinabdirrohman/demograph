@@ -17,19 +17,22 @@ import { ReligionService } from './religion.service';
 import { UserRole } from '../../users/user-role.enum';
 import { Throttle } from '@nestjs/throttler';
 import { ReligionDto } from './religion.dto';
-import { TransResponse } from './response.type';
+import { DefaultResponse } from '../response.type';
 import RolesGuard from '../../users/user-role.guard';
+import { Religion } from './religion.schema';
+import MongooseClassSerializerInterceptor from '../../mongooseClassSerializer.interceptor';
 
 @Controller('religion')
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(MongooseClassSerializerInterceptor(Religion))
 @UseGuards(AuthGuard('jwt'))
 export class ReligionController {
   constructor(private ReligionService: ReligionService) {}
 
   @Post()
+  @UseGuards(RolesGuard(UserRole.ADMIN))
   async registerReligion(
     @Body() ReligionDto: ReligionDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     return this.ReligionService.registerReligion(ReligionDto);
   }
 
@@ -37,7 +40,7 @@ export class ReligionController {
   @Get()
   @Throttle(50, 60)
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async getReligions() {
+  async getReligions(): Promise<DefaultResponse> {
     return this.ReligionService.getReligions();
   }
 
@@ -46,13 +49,13 @@ export class ReligionController {
   async updateReligion(
     @Param('id') id: string,
     @Body() ReligionDto: ReligionDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     return this.ReligionService.updateReligion(id, ReligionDto);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async deleteReligion(@Param('id') id: string): Promise<TransResponse> {
+  async deleteReligion(@Param('id') id: string): Promise<DefaultResponse> {
     return this.ReligionService.deleteReligion(id);
   }
 }

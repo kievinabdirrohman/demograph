@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type ReligionDocument = Religion & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Religion {
   @Prop({ type: String, unique: true })
   id: {

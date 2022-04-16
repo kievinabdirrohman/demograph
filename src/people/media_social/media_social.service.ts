@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { MediaSocial, MediaSocialDocument } from './media_social.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { TransResponse } from './media_social.type';
+import { DefaultResponse } from '../response.type';
 import { MediaSocialDto } from './media_social.dto';
 import { Model } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
@@ -31,9 +32,9 @@ export class MediaSocialService {
 
   async registerMediaSocial(
     MediaSocialDto: MediaSocialDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     let { name } = MediaSocialDto;
-    name = xss(name);
+    name = xss(name.trim());
     const isExist = await this.mediasocialModel.findOne({ name: name }).exec();
     if (isExist) {
       throw new ConflictException('name has already registered');
@@ -55,7 +56,11 @@ export class MediaSocialService {
 
       await session.commitTransaction();
 
-      return { message: 'success' };
+      return {
+        statusCode: 201,
+        message: 'media social registered successfully',
+        error: null,
+      };
     } catch (error) {
       await session.abortTransaction();
       throw new InternalServerErrorException('Something went wrong');
@@ -67,9 +72,9 @@ export class MediaSocialService {
   async updateMediaSocial(
     id: string,
     MediaSocialDto: MediaSocialDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     let { name } = MediaSocialDto;
-    name = xss(name);
+    name = xss(name.trim());
     const mediaSocial = await this.mediasocialModel.findOne({ id: id }).exec();
     if (!mediaSocial) {
       throw new NotFoundException('Media Social is not found!');
@@ -106,7 +111,11 @@ export class MediaSocialService {
         },
       });
       await session.commitTransaction();
-      return { message: 'success' };
+      return {
+        statusCode: 200,
+        message: 'media social updated successfully',
+        error: null,
+      };
     } catch (error) {
       await session.abortTransaction();
       throw new InternalServerErrorException('Something went wrong');
@@ -115,7 +124,7 @@ export class MediaSocialService {
     }
   }
 
-  async deleteMediaSocial(id: string): Promise<TransResponse> {
+  async deleteMediaSocial(id: string): Promise<DefaultResponse> {
     const mediaSocial = await this.mediasocialModel.findOne({ id: id }).exec();
     if (!mediaSocial) {
       throw new NotFoundException('Media Social is not found!');
@@ -135,7 +144,11 @@ export class MediaSocialService {
         },
       });
       await session.commitTransaction();
-      return { message: 'success' };
+      return {
+        statusCode: 200,
+        message: 'media social deleted successfully',
+        error: null,
+      };
     } catch (error) {
       await session.abortTransaction();
       throw new InternalServerErrorException('Something went wrong');
@@ -144,13 +157,17 @@ export class MediaSocialService {
     }
   }
 
-  async getMediaSocials() {
+  async getMediaSocials(): Promise<DefaultResponse> {
     const mediaSocials =
       await this.elasticsearchService.search<MediaSocialResponse>({
         index: this.mediaSocialIndex,
       });
 
     const hits = mediaSocials.hits.hits;
-    return hits.map((item) => item._source);
+    return {
+      statusCode: 200,
+      message: JSON.stringify(hits.map((item) => item._source)),
+      error: null,
+    };
   }
 }

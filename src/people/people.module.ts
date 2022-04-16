@@ -5,6 +5,8 @@ import { ProfessionService } from './profession/profession.service';
 import { ProfessionController } from './profession/profession.controller';
 import { MediaSocialService } from './media_social/media_social.service';
 import { MediaSocialController } from './media_social/media_social.controller';
+import { PeopleService } from './people/people.service';
+import { PeopleController } from './people/people.controller';
 import { AuthModule } from '../auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Religion, ReligionSchema } from './religion/religion.schema';
@@ -13,6 +15,7 @@ import {
   MediaSocial,
   MediaSocialSchema,
 } from './media_social/media_social.schema';
+import { People, PeopleSchema } from './people/people.schema';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -33,6 +36,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       { name: Religion.name, schema: ReligionSchema },
       { name: Profession.name, schema: ProfessionSchema },
       { name: MediaSocial.name, schema: MediaSocialSchema },
+      { name: People.name, schema: PeopleSchema },
     ]),
     AuthModule,
   ],
@@ -40,7 +44,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ReligionController,
     ProfessionController,
     MediaSocialController,
+    PeopleController,
   ],
-  providers: [ReligionService, ProfessionService, MediaSocialService],
+  providers: [
+    ReligionService,
+    ProfessionService,
+    MediaSocialService,
+    PeopleService,
+  ],
 })
 export class PeopleModule {}

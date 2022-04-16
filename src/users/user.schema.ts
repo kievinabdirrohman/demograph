@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserRole } from './user-role.enum';
+import { Exclude } from 'class-transformer';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Prop({ type: String, unique: true })
   id: {
@@ -32,6 +33,7 @@ export class User {
   };
 
   @Prop({ type: String })
+  @Exclude()
   password: {
     type: String;
     required: [true, 'please provide a password'];
@@ -40,6 +42,7 @@ export class User {
   };
 
   @Prop({ type: String })
+  @Exclude()
   refresh_token: {
     type: String;
     required: [true, 'please provide a refresh_token'];
@@ -50,10 +53,10 @@ export class User {
   @Prop({ type: String })
   role: {
     type: String;
-    required: [true, 'please provide a password'];
+    required: [true, 'please provide a role'];
     enum: {
       values: UserRole;
-      message: '{VALUE} is not supported';
+      message: '{VALUE} is not allowed';
     };
   };
 

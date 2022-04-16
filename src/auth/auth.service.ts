@@ -114,8 +114,12 @@ export class AuthService {
       await session.commitTransaction();
 
       return {
-        access_token: accessToken,
-        refresh_token: refreshToken,
+        statusCode: 201,
+        message: JSON.stringify([
+          { access_token: accessToken },
+          { refresh_token: refreshToken },
+        ]),
+        error: null,
       };
     } catch (error) {
       await session.abortTransaction();
@@ -158,8 +162,12 @@ export class AuthService {
           { new: true },
         );
         return {
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          statusCode: 200,
+          message: JSON.stringify([
+            { access_token: accessToken },
+            { refresh_token: refreshToken },
+          ]),
+          error: null,
         };
       } catch (error) {
         throw new NotFoundException('username or password is incorrect');
@@ -196,10 +204,20 @@ export class AuthService {
       const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
 
       try {
-        await this.authModel.updateOne({ refresh_token: hashedRefreshToken });
+        await this.authModel.findOneAndUpdate(
+          { username: user.username },
+          {
+            refresh_token: hashedRefreshToken,
+          },
+          { new: true },
+        );
         return {
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          statusCode: 200,
+          message: JSON.stringify([
+            { access_token: accessToken },
+            { refresh_token: refreshToken },
+          ]),
+          error: null,
         };
       } catch (error) {
         throw new NotFoundException('username or password is incorrect');

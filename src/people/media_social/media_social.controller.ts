@@ -4,10 +4,8 @@ import {
   Post,
   Body,
   UseGuards,
-  ClassSerializerInterceptor,
   UseInterceptors,
   CacheInterceptor,
-  Put,
   Param,
   Patch,
   Delete,
@@ -17,19 +15,22 @@ import { MediaSocialService } from './media_social.service';
 import { UserRole } from '../../users/user-role.enum';
 import { Throttle } from '@nestjs/throttler';
 import { MediaSocialDto } from './media_social.dto';
-import { TransResponse } from './media_social.type';
+import { DefaultResponse } from '../response.type';
 import RolesGuard from '../../users/user-role.guard';
+import { MediaSocial } from './media_social.schema';
+import MongooseClassSerializerInterceptor from '../../mongooseClassSerializer.interceptor';
 
 @Controller('mediasocial')
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(MongooseClassSerializerInterceptor(MediaSocial))
 @UseGuards(AuthGuard('jwt'))
 export class MediaSocialController {
   constructor(private MediaSocialService: MediaSocialService) {}
 
   @Post()
+  @UseGuards(RolesGuard(UserRole.ADMIN))
   async registerMediaSocial(
     @Body() MediaSocialDto: MediaSocialDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     return this.MediaSocialService.registerMediaSocial(MediaSocialDto);
   }
 
@@ -37,7 +38,7 @@ export class MediaSocialController {
   @Get()
   @Throttle(50, 60)
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async getMediaSocials() {
+  async getMediaSocials(): Promise<DefaultResponse> {
     return this.MediaSocialService.getMediaSocials();
   }
 
@@ -46,13 +47,13 @@ export class MediaSocialController {
   async updateMediaSocial(
     @Param('id') id: string,
     @Body() MediaSocialDto: MediaSocialDto,
-  ): Promise<TransResponse> {
+  ): Promise<DefaultResponse> {
     return this.MediaSocialService.updateMediaSocial(id, MediaSocialDto);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard(UserRole.ADMIN))
-  async deleteMediaSocial(@Param('id') id: string): Promise<TransResponse> {
+  async deleteMediaSocial(@Param('id') id: string): Promise<DefaultResponse> {
     return this.MediaSocialService.deleteMediaSocial(id);
   }
 }
