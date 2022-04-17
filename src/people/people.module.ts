@@ -18,6 +18,10 @@ import {
 import { People, PeopleSchema } from './people/people.schema';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PeopleResolver } from './people/people.resolver';
+import { MediaSocialResolver } from './media_social/media_social.resolver';
+import { ProfessionResolver } from './profession/profession.resolver';
+import { ReligionResolver } from './religion/religion.resolver';
 
 @Module({
   imports: [
@@ -51,6 +55,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ProfessionService,
     MediaSocialService,
     PeopleService,
+    PeopleResolver,
+    MediaSocialResolver,
+    ProfessionResolver,
+    ReligionResolver,
   ],
 })
 export class PeopleModule {}

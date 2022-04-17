@@ -7,7 +7,6 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Profession, ProfessionDocument } from './profession.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { TransResponse } from './response.type';
 import { DefaultResponse } from '../response.type';
 import { ProfessionDto } from './profession.dto';
 import { Model } from 'mongoose';
@@ -37,7 +36,7 @@ export class ProfessionService {
     name = xss(name.trim());
     const isExist = await this.professionModel.findOne({ name: name }).exec();
     if (isExist) {
-      throw new ConflictException('name has already registered');
+      throw new ConflictException('profession has already registered');
     }
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -169,5 +168,15 @@ export class ProfessionService {
       message: JSON.stringify(hits.map((item) => item._source)),
       error: null,
     };
+  }
+
+  async getProfessionGraph() {
+    const profession =
+      await this.elasticsearchService.search<ProfessionResponse>({
+        index: this.professionIndex,
+      });
+
+    const hits = profession.hits.hits;
+    return hits.map((item) => item._source);
   }
 }

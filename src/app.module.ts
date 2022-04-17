@@ -36,6 +36,7 @@ import { configValidationSchema } from './config.schema';
       driver: ApolloDriver,
       autoSchemaFile: true,
       playground: false,
+      debug: false,
     }),
     AuthModule,
     UserModule,

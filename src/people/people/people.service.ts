@@ -131,8 +131,8 @@ export class PeopleService {
           place_of_birth: place_of_birth,
           date_of_birth: date_of_birth,
           address: address,
-          religion: dataReligion,
-          profession: dataProfession,
+          religion: Array(dataReligion),
+          profession: Array(dataProfession),
           media_social: dataMediaSocial,
           is_married: is_married,
           is_alive: is_alive,
@@ -228,8 +228,8 @@ export class PeopleService {
           place_of_birth: place_of_birth,
           date_of_birth: date_of_birth,
           address: address,
-          religion: dataReligion,
-          profession: dataProfession,
+          religion: Array(dataReligion),
+          profession: Array(dataProfession),
           media_social: dataMediaSocial,
           is_married: is_married,
           is_alive: is_alive,
@@ -336,5 +336,14 @@ export class PeopleService {
       message: JSON.stringify(hits.map((item) => item._source)),
       error: null,
     };
+  }
+
+  async getPeopleGraph() {
+    const peoples = await this.elasticsearchService.search<PeopleResponse>({
+      index: this.peopleIndex,
+    });
+
+    const hits = peoples.hits.hits;
+    return hits.map((item) => item._source);
   }
 }

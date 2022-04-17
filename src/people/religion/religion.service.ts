@@ -7,7 +7,6 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Religion, ReligionDocument } from './religion.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { TransResponse } from './response.type';
 import { DefaultResponse } from '../response.type';
 import { ReligionDto } from './religion.dto';
 import { Model } from 'mongoose';
@@ -34,7 +33,7 @@ export class ReligionService {
     name = xss(name.trim());
     const isExist = await this.religionModel.findOne({ name: name }).exec();
     if (isExist) {
-      throw new ConflictException('name has already registered');
+      throw new ConflictException('religion has already registered');
     }
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -165,5 +164,14 @@ export class ReligionService {
       message: JSON.stringify(hits.map((item) => item._source)),
       error: null,
     };
+  }
+
+  async getReligionGraph() {
+    const religions = await this.elasticsearchService.search<ReligionResponse>({
+      index: this.religionIndex,
+    });
+
+    const hits = religions.hits.hits;
+    return hits.map((item) => item._source);
   }
 }

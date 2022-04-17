@@ -9,7 +9,7 @@ export class UserResolver {
 
   @Query((returns) => [UserType])
   @Throttle(50, 60)
-  users() {
+  async users() {
     return this.userService.getUsers();
   }
 }

@@ -7,7 +7,6 @@ import {
 import { v4 as uuid } from 'uuid';
 import { MediaSocial, MediaSocialDocument } from './media_social.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { TransResponse } from './media_social.type';
 import { DefaultResponse } from '../response.type';
 import { MediaSocialDto } from './media_social.dto';
 import { Model } from 'mongoose';
@@ -37,7 +36,7 @@ export class MediaSocialService {
     name = xss(name.trim());
     const isExist = await this.mediasocialModel.findOne({ name: name }).exec();
     if (isExist) {
-      throw new ConflictException('name has already registered');
+      throw new ConflictException('media social has already registered');
     }
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -169,5 +168,15 @@ export class MediaSocialService {
       message: JSON.stringify(hits.map((item) => item._source)),
       error: null,
     };
+  }
+
+  async getMediaSocialGraph() {
+    const mediaSocials =
+      await this.elasticsearchService.search<MediaSocialResponse>({
+        index: this.mediaSocialIndex,
+      });
+
+    const hits = mediaSocials.hits.hits;
+    return hits.map((item) => item._source);
   }
 }
