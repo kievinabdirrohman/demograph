@@ -27,13 +27,13 @@ export class AuthController {
   }
 
   @Post('/signin')
-  @Throttle(3, 3600)
+  @Throttle(60, 3600)
   async signIn(@Body() SignInDto: SignInDto): Promise<AuthResponse> {
     return this.authService.signIn(SignInDto);
   }
 
   @Get('/refresh_token')
-  @Throttle(10, 60)
+  @Throttle(60, 3600)
   @UseGuards(AuthGuard('jwt-refresh'))
   async refreshToken(@GetUser() user: User): Promise<AuthResponse> {
     return this.authService.refreshToken(user);

@@ -23,7 +23,7 @@ export class User {
     unique: [true, '{VALUE} has already registered'];
   };
 
-  @Prop({ type: String })
+  @Prop({ type: String, unique: true })
   email: {
     type: String;
     required: [true, 'please provide an email'];
